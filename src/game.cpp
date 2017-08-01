@@ -33,7 +33,6 @@ int main(int argc, char** argv){
 
 void mainLoop(){
 
-  SDL_Texture* image;
   SDL_Rect screenRect;
   bool quit = false;
   bool grounded = false;
@@ -52,24 +51,15 @@ void mainLoop(){
   player.transform.constrain(screenRect);
   
   physics.add(&player.pBody);
-  
-  image = loadTexture("test.bmp");
 
   Level l = Level();
-  l.tiles.push_back(Tile(new Transform(0,SCREEN_HEIGHT-30,SCREEN_WIDTH,20), new Sprite("spriteTest.bmp",10,10)));
+  l.tiles.push_back(Tile(new Transform(0,SCREEN_HEIGHT-100,100,100), new Sprite("test.bmp",100,100)));
+  l.tiles.push_back(Tile(new Transform(100,SCREEN_HEIGHT-100,100,100), new Sprite("test.bmp",100,100)));
+  l.tiles.push_back(Tile(new Transform(200,SCREEN_HEIGHT-100,100,100), new Sprite("test.bmp",100,100)));
+  l.tiles[1].nextFrame();
+  l.tiles[2].nextFrame();
+  l.tiles[2].nextFrame();
   
-  ParticleEmitter kurt = ParticleEmitter(100,1,screenRect, loadTexture("kurt.bmp"), screenRect);
-  
-  kurt.liveArea.x = SCREEN_WIDTH/2-20;
-  kurt.liveArea.y = SCREEN_HEIGHT-50;
-  kurt.liveArea.w = 40;
-  kurt.liveArea.h = 120;
-  
-  kurt.spawnArea.y = SCREEN_HEIGHT-15;
-  kurt.spawnArea.x = SCREEN_WIDTH/2-10;
-  kurt.spawnArea.w = 20;
-  kurt.spawnArea.h = 20;
-  kurt.setDir(0, -100);
   while(!quit){
     
     while(SDL_PollEvent(&e) != 0){
@@ -108,9 +98,7 @@ void mainLoop(){
     //Render
     SDL_RenderClear(windowRenderer);
 
-    SDL_RenderCopy(windowRenderer, image, NULL, NULL);
     player.render(windowRenderer);
-    kurt.render(windowRenderer);
     l.render(windowRenderer);
     
     SDL_RenderPresent(windowRenderer);
@@ -121,11 +109,15 @@ void mainLoop(){
     
     animationTime+=SDL_GetTicks()-startTime;
 
+	physics.update((SDL_GetTicks()-startTime)/1000.f);
+	
     if(l.collides(&(player.transform))){
       player.pBody.vely = 0;
       player.pBody.grounded = true;
     }
-    
+
+	player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
+	
     if(animationTime>1000.f/ANIMATION_RATE){
       player.sprite.nextFrame();
       l.update();
@@ -133,10 +125,6 @@ void mainLoop(){
     }
 
     player.transform.move(xdir,0);
-    
-    physics.update((SDL_GetTicks()-startTime)/1000.f);
-    player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
-    kurt.update((SDL_GetTicks()-startTime)/1000.f);
 	
     std::clog<<framecount/(SDL_GetTicks()/1000.f)<<std::endl;
     framecount++;

@@ -56,9 +56,5 @@ void Transform::constrain(SDL_Rect _c){
 }
 
 bool Transform::collides(Transform other){
-  if(y+height>other.y && y+height<=other.y+other.height && x+width > other.x && x+height<=other.x+other.width){
-    return true;
-  }
-  if(other.x+other.width>x && other.y+other.height > y && other.x+other.width<=x+width && other.y + other.height <= y+height) return true;
-  return false;
+  return other.x+other.width>=x && other.x<=x+width && other.y+other.height>=y && other.y<=y+height;
 }
