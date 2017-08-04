@@ -26,10 +26,11 @@ class GUIPanel{
 
 class GUISlider{
  public:
-  SDL_Texture* texture;
+  SDL_Texture *foreground, *background;
   Transform position;
+  int value, max;
   
-  GUISlider(SDL_Texture* t, Transform* _pos);
+  GUISlider(SDL_Texture* foreground, SDL_Texture* _background, Transform* _pos, int _max, int _value);
   void render(SDL_Renderer* renderer);
 };
 

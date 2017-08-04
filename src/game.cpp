@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "physics.h"
 #include "level.h"
+#include "gui.h"
 
 int SCREEN_WIDTH = 640;
 int SCREEN_HEIGHT = 480;
@@ -32,7 +33,7 @@ int main(int argc, char** argv){
 
 
 void mainLoop(){
-
+  
   SDL_Rect screenRect;
   bool quit = false;
   bool grounded = false;
@@ -41,6 +42,15 @@ void mainLoop(){
   int startTime = 0;
   int framecount = 0;
   int animationTime = 0;
+  GUIPanel gp = GUIPanel("", new Transform(0,0,100,100),loadTexture("test.bmp"));
+  Sprite font = Sprite("font.bmp", 10, 10);
+  font.setFrame('c'-'a');
+  
+  std::vector<GUIContainer> gui;
+  GUIContainer temp;
+  temp.item = &gp;
+  temp.itemType = PANEL;
+  gui.push_back(temp);
   
   screenRect.x=0;
   screenRect.y=0;
@@ -59,6 +69,8 @@ void mainLoop(){
   l.tiles[1].nextFrame();
   l.tiles[2].nextFrame();
   l.tiles[2].nextFrame();
+
+  SDL_SetRenderDrawColor(windowRenderer, 0, 0, 0, 0);
   
   while(!quit){
     
@@ -98,6 +110,18 @@ void mainLoop(){
     //Render
     SDL_RenderClear(windowRenderer);
 
+    gui[0].render(windowRenderer);
+
+    SDL_Rect temp = {0,0,100,100};
+    font.setFrame('c'-'a');
+    font.render(windowRenderer,&temp);
+    temp.x+=100;
+    font.setFrame('a'-'a');
+    font.render(windowRenderer,&temp);
+    temp.x+=100;
+    font.setFrame('t'-'a');
+    font.render(windowRenderer,&temp);
+    
     player.render(windowRenderer);
     l.render(windowRenderer);
     
@@ -115,8 +139,8 @@ void mainLoop(){
       player.pBody.vely = 0;
       player.pBody.grounded = true;
     }
-
-	player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
+    
+    player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
 	
     if(animationTime>1000.f/ANIMATION_RATE){
       player.sprite.nextFrame();
