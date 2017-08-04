@@ -42,9 +42,8 @@ void mainLoop(){
   int startTime = 0;
   int framecount = 0;
   int animationTime = 0;
-  GUIPanel gp = GUIPanel("", new Transform(0,0,100,100),loadTexture("test.bmp"));
   Sprite font = Sprite("font.bmp", 10, 10);
-  font.setFrame('c'-'a');
+  GUIPanel gp = GUIPanel("cat", &font, new Transform(0,0,100,100),loadTexture("test.bmp"));
   
   std::vector<GUIContainer> gui;
   GUIContainer temp;
@@ -112,16 +111,6 @@ void mainLoop(){
 
     gui[0].render(windowRenderer);
 
-    SDL_Rect temp = {0,0,100,100};
-    font.setFrame('c'-'a');
-    font.render(windowRenderer,&temp);
-    temp.x+=100;
-    font.setFrame('a'-'a');
-    font.render(windowRenderer,&temp);
-    temp.x+=100;
-    font.setFrame('t'-'a');
-    font.render(windowRenderer,&temp);
-    
     player.render(windowRenderer);
     l.render(windowRenderer);
     

@@ -1,6 +1,7 @@
 #ifndef GUI_H_
 #define GUI_H_
 
+#include "graphics.h"
 #include "transform.h"
 #include<string>
 
@@ -19,8 +20,9 @@ class GUIPanel{
   SDL_Texture* background;
   std::string text;
   Transform position;
-
-  GUIPanel(std::string _text, Transform* t, SDL_Texture* s);
+  Sprite font;
+  
+  GUIPanel(std::string _text, Sprite* _font, Transform* t, SDL_Texture* s);
   void render(SDL_Renderer* renderer);
 };
 

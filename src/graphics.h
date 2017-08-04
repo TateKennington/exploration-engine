@@ -16,6 +16,7 @@ class Sprite{
   Sprite(std::string fname, int _frameWidth, int _frameHeight);
 
   void nextFrame();
+  void setFrame(int index);
   void render(SDL_Renderer* renderer, SDL_Rect* position);
 };
 

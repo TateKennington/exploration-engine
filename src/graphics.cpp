@@ -49,6 +49,14 @@ Sprite::Sprite(std::string fname, int _frameWidth, int _frameHeight){
   currentFrame.h = frameHeight;
 }
 
+void Sprite::setFrame(int index){
+  int col = sheetWidth/frameWidth;
+
+  std::clog<<col<<" "<<index%col<<" "<<index/col<<std::endl;
+  currentFrame.y = index/col * frameHeight;
+  currentFrame.x = (index%col) * frameWidth;
+}
+
 void Sprite::nextFrame(){
   currentFrame.x+=frameWidth;
   if(currentFrame.x == sheetWidth){

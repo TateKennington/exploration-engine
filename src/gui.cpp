@@ -10,7 +10,8 @@ void GUIContainer::render(SDL_Renderer* renderer){
   }
 }
 
-GUIPanel::GUIPanel(std::string _text, Transform* t, SDL_Texture* s){
+GUIPanel::GUIPanel(std::string _text, Sprite* _font, Transform* t, SDL_Texture* s){
+  font = (*_font);
   text = _text;
   position = (*t);
   background = s;
@@ -23,6 +24,14 @@ void GUIPanel::render(SDL_Renderer* renderer){
   temp.w = position.width;
   temp.h = position.height;
   SDL_RenderCopy(renderer, background, NULL, &temp);
+  temp.w = temp.w/text.length();
+  temp.y = (temp.y+temp.h)/2 - temp.w/2;
+  temp.h = temp.w;
+  for(int i = 0; i<text.length();i++){
+    font.setFrame(text[i]-'a');
+    font.render(renderer, &temp);
+    temp.x+=temp.w;
+  }
 }
 
 GUISlider::GUISlider(SDL_Texture* _foreground, SDL_Texture* _background, Transform* _pos, int _max, int _value){
