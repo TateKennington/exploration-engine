@@ -44,6 +44,13 @@ GUISlider::GUISlider(SDL_Texture* _foreground, SDL_Texture* _background, Transfo
 
 void GUISlider::render(SDL_Renderer* renderer){
   SDL_Rect temp;
+  temp.x = position.x-5;
+  temp.y = position.y-5;
+  temp.w = position.width+10;
+  temp.h = position.height+10;
+
+  SDL_RenderCopy(renderer, background, NULL, &temp);
+
   temp.x = position.x;
   temp.y = position.y;
   temp.w = position.width/max;
@@ -54,8 +61,4 @@ void GUISlider::render(SDL_Renderer* renderer){
     temp.x+=temp.w;
   }
   
-  for(int i = value; i<max; i++){
-    SDL_RenderCopy(renderer, background, NULL, &temp);
-    temp.x+=temp.w;
-  }
 }

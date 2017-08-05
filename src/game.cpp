@@ -42,13 +42,12 @@ void mainLoop(){
   int startTime = 0;
   int framecount = 0;
   int animationTime = 0;
-  Sprite font = Sprite("font.bmp", 10, 10);
-  GUIPanel gp = GUIPanel("cat", &font, new Transform(0,0,100,100),loadTexture("test.bmp"));
+  GUISlider gs = GUISlider(loadTexture("test.bmp"), loadTexture("snow.bmp"), new Transform(10,10,100,100), 100, 50);
   
   std::vector<GUIContainer> gui;
   GUIContainer temp;
-  temp.item = &gp;
-  temp.itemType = PANEL;
+  temp.item = &gs;
+  temp.itemType = SLIDER;
   gui.push_back(temp);
   
   screenRect.x=0;
@@ -102,6 +101,23 @@ void mainLoop(){
 		  player.pBody.grounded = false;
 		}
       }
+	  else if(e.type == SDL_KEYDOWN){
+		if(player.pBody.grounded && e.key.keysym.sym == SDLK_w){
+		  player.pBody.addForce(0,-100);
+		  player.pBody.grounded = false;
+		}
+		else if(e.key.keysym.sym == SDLK_a){
+		  xdir = -1;
+		}
+		else if(e.key.keysym.sym == SDLK_d){
+		  xdir = 1;
+		}
+	  }
+	  else if(e.type == SDL_KEYUP){
+		if(e.key.keysym.sym == SDLK_a || e.key.keysym.sym == SDLK_d){
+		  xdir = 0;
+		}
+	  }
     }
     
     startTime = SDL_GetTicks();
@@ -123,18 +139,22 @@ void mainLoop(){
     animationTime+=SDL_GetTicks()-startTime;
 
 	physics.update((SDL_GetTicks()-startTime)/1000.f);
+
+	player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
 	
     if(l.collides(&(player.transform))){
       player.pBody.vely = 0;
       player.pBody.grounded = true;
     }
-    
-    player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
+	else{
+	  player.pBody.grounded = false;
+	}
 	
     if(animationTime>1000.f/ANIMATION_RATE){
       player.sprite.nextFrame();
       l.update();
       animationTime-=1000.f/ANIMATION_RATE;
+	  gs.value++;
     }
 
     player.transform.move(xdir,0);
