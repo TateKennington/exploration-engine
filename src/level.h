@@ -19,16 +19,29 @@ class Tile{
   void nextFrame();
 };
 
+class Warp{
+ public:
+  Transform transform;
+  int dest_level, x, y;
+
+  Warp();
+  Warp(Transform* _t, int _dest_level, int _x, int _y);
+
+  bool collides(Transform* other);
+};
+
 class Level{
  public:
   std::vector<Tile> tiles;
-
+  std::vector<Warp> warps;
+  
   Level();
   Level(std::vector<Tile>* _tiles);
 
   void render(SDL_Renderer* renderer);
   void update();
   bool collides(Transform* other);
+  int checkWarp(Transform* other);
 };
 
 #endif

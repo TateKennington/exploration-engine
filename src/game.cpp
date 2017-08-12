@@ -67,8 +67,17 @@ void mainLoop(){
   l.tiles[1].nextFrame();
   l.tiles[2].nextFrame();
   l.tiles[2].nextFrame();
-
+  l.warps.push_back(Warp(new Transform(SCREEN_WIDTH/2, SCREEN_HEIGHT,20,20), 1, SCREEN_WIDTH/2, 0));
   SDL_SetRenderDrawColor(windowRenderer, 0, 0, 0, 0);
+
+  Level l2 = Level();
+  l2.warps.push_back(Warp(new Transform(SCREEN_WIDTH/2, SCREEN_HEIGHT,20,20), 0, SCREEN_WIDTH/2, 0));
+  
+  Level *currLevel = &l;
+  
+  Level *levels[2];
+  levels[0] = &l;
+  levels[1] = &l2;
   
   while(!quit){
     
@@ -128,7 +137,7 @@ void mainLoop(){
     gui[0].render(windowRenderer);
 
     player.render(windowRenderer);
-    l.render(windowRenderer);
+    (*currLevel).render(windowRenderer);
     
     SDL_RenderPresent(windowRenderer);
 
@@ -142,7 +151,7 @@ void mainLoop(){
 
 	player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
 	
-    if(l.collides(&(player.transform))){
+    if((*currLevel).collides(&(player.transform))){
       player.pBody.vely = 0;
       player.pBody.grounded = true;
     }
@@ -152,12 +161,18 @@ void mainLoop(){
 	
     if(animationTime>1000.f/ANIMATION_RATE){
       player.sprite.nextFrame();
-      l.update();
+      (*currLevel).update();
       animationTime-=1000.f/ANIMATION_RATE;
 	  gs.value++;
     }
 
     player.transform.move(xdir,0);
+
+	if((*currLevel).checkWarp(&(player.transform))>=0){
+	  int index = (*currLevel).checkWarp(&(player.transform));
+	  player.transform.setPosition((*currLevel).warps[index].x, (*currLevel).warps[index].y);
+	  currLevel = levels[(*currLevel).warps[index].dest_level];
+	}
 	
     std::clog<<framecount/(SDL_GetTicks()/1000.f)<<std::endl;
     framecount++;

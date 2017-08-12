@@ -27,6 +27,24 @@ void Tile::nextFrame(){
   sprite.nextFrame();
 }
 
+Warp::Warp(){
+  dest_level = -1;
+  x = 0;
+  y = 0;
+  transform = Transform(0,0,0,0);
+}
+
+Warp::Warp(Transform* _t, int _dest_level, int _x, int _y){
+  transform = (*_t);
+  dest_level = _dest_level;
+  x = _x;
+  y = _y;
+}
+
+bool Warp::collides(Transform* other){
+  return transform.collides(*other);
+}
+
 Level::Level(){
   tiles = std::vector<Tile>();
 }
@@ -53,4 +71,11 @@ void Level::update(){
   for(int i = 0; i<tiles.size(); i++){
     tiles[i].nextFrame();
   }
+}
+
+int Level::checkWarp(Transform* other){
+  for(int i = 0; i<warps.size(); i++){
+	if(warps[i].collides(other)) return i;
+  }
+  return -1;
 }
