@@ -10,12 +10,16 @@ int SCREEN_HEIGHT = 480;
 int FRAME_RATE = 60;
 int ANIMATION_RATE = 4;
 int BUTTON_JUMP = 0;
+bool quit = false;
 
 SDL_Window* window = NULL;
 SDL_Renderer* windowRenderer = NULL;
 SDL_Joystick* controller = NULL;
 SDL_Event e;
 
+Level map[10][10];
+Level* currLevel;
+Entity player;
 
 int main(int argc, char** argv){
   if(!init()){
@@ -31,57 +35,9 @@ int main(int argc, char** argv){
   
 }
 
+void handleEvents(){
 
-void mainLoop(){
-  
-  SDL_Rect screenRect;
-  bool quit = false;
-  bool grounded = false;
-  float xdir = 0, ydir = 0;
-  Physics physics = Physics(100);
-  int startTime = 0;
-  int framecount = 0;
-  int animationTime = 0;
-  GUISlider gs = GUISlider(loadTexture("test.bmp"), loadTexture("snow.bmp"), new Transform(10,10,100,100), 100, 50);
-  
-  std::vector<GUIContainer> gui;
-  GUIContainer temp;
-  temp.item = &gs;
-  temp.itemType = SLIDER;
-  gui.push_back(temp);
-  
-  screenRect.x=0;
-  screenRect.y=0;
-  screenRect.w = SCREEN_WIDTH;
-  screenRect.h = SCREEN_HEIGHT;
-  
-  Entity player = Entity(new Transform(90,90,20,20), new Sprite("spriteTest.bmp",10,10),new PhysicsBody());
-  player.transform.constrain(screenRect);
-  
-  physics.add(&player.pBody);
-
-  Level l = Level();
-  l.tiles.push_back(Tile(new Transform(0,SCREEN_HEIGHT-100,100,100), new Sprite("test.bmp",100,100)));
-  l.tiles.push_back(Tile(new Transform(100,SCREEN_HEIGHT-100,100,100), new Sprite("test.bmp",100,100)));
-  l.tiles.push_back(Tile(new Transform(200,SCREEN_HEIGHT-100,100,100), new Sprite("test.bmp",100,100)));
-  l.tiles[1].nextFrame();
-  l.tiles[2].nextFrame();
-  l.tiles[2].nextFrame();
-  l.warps.push_back(Warp(new Transform(SCREEN_WIDTH/2, SCREEN_HEIGHT,20,20), 1, SCREEN_WIDTH/2, 0));
-  SDL_SetRenderDrawColor(windowRenderer, 0, 0, 0, 0);
-
-  Level l2 = Level();
-  l2.warps.push_back(Warp(new Transform(SCREEN_WIDTH/2, SCREEN_HEIGHT,20,20), 0, SCREEN_WIDTH/2, 0));
-  
-  Level *currLevel = &l;
-  
-  Level *levels[2];
-  levels[0] = &l;
-  levels[1] = &l2;
-  
-  while(!quit){
-    
-    while(SDL_PollEvent(&e) != 0){
+  while(SDL_PollEvent(&e) != 0){
 	  
       if(e.type == SDL_QUIT){
 		quit = true;
@@ -92,13 +48,10 @@ void mainLoop(){
 		  ///X-axis
 		  if(e.jaxis.axis == 0){
 			if(e.jaxis.value < -8000){
-			  xdir=-1;
 			}
 			else if(e.jaxis.value>8000){
-			  xdir=1;
 			}
 			else{
-			  xdir=0;
 			}
 		  } 
 		}
@@ -116,41 +69,77 @@ void mainLoop(){
 		  player.pBody.grounded = false;
 		}
 		else if(e.key.keysym.sym == SDLK_a){
-		  xdir = -1;
 		}
 		else if(e.key.keysym.sym == SDLK_d){
-		  xdir = 1;
 		}
 	  }
 	  else if(e.type == SDL_KEYUP){
 		if(e.key.keysym.sym == SDLK_a || e.key.keysym.sym == SDLK_d){
-		  xdir = 0;
 		}
 	  }
     }
-    
+  
+}
+
+void renderFrame(){
+
+  SDL_RenderClear(windowRenderer);
+  SDL_SetRenderDrawColor(windowRenderer,0,0,0,255);
+  
+  player.render(windowRenderer);
+  (*currLevel).render(windowRenderer);
+  
+  SDL_RenderPresent(windowRenderer);
+  
+}
+
+void mainLoop(){
+  
+  SDL_Rect screenRect;
+  float xdir = 0;
+  Physics physics = Physics(100);
+  int startTime = 0;
+  int framecount = 0;
+  int animationTime = 0;
+  
+  screenRect.x=0;
+  screenRect.y=0;
+  screenRect.w = SCREEN_WIDTH;
+  screenRect.h = SCREEN_HEIGHT;
+
+  player = Entity(new Transform(90,90,20,20), new Sprite("spriteTest.bmp",10,10),new PhysicsBody());
+  player.transform.constrain(screenRect);
+  player.pBody.target = &player.transform;
+  
+  physics.add(&player.pBody);
+
+  currLevel = &map[0][0];
+  
+  while(!quit){
+
+	handleEvents();
+
+	//Render new frame
     startTime = SDL_GetTicks();
-    
-    //Render
-    SDL_RenderClear(windowRenderer);
+	renderFrame();
+	if(SDL_GetTicks()-startTime < 1000.f/FRAME_RATE){   //Cap Framerate
+	  SDL_Delay(1000.f/FRAME_RATE-(SDL_GetTicks()-startTime));
+	}
 
-    gui[0].render(windowRenderer);
-
-    player.render(windowRenderer);
-    (*currLevel).render(windowRenderer);
-    
-    SDL_RenderPresent(windowRenderer);
-
-    if(SDL_GetTicks()-startTime < 1000.f/FRAME_RATE){
-      SDL_Delay(1000.f/FRAME_RATE-(SDL_GetTicks()-startTime));
-    }
-    
+	//Frame independant updates
+	////Update animation state
     animationTime+=SDL_GetTicks()-startTime;
+	if(animationTime>1000.f/ANIMATION_RATE){
+      player.sprite.nextFrame();
+      (*currLevel).update();
+      animationTime-=1000.f/ANIMATION_RATE;
+    }
 
+	////Physics Update
 	physics.update((SDL_GetTicks()-startTime)/1000.f);
-
 	player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
 	
+	////Level Update
     if((*currLevel).collides(&(player.transform))){
       player.pBody.vely = 0;
       player.pBody.grounded = true;
@@ -158,22 +147,13 @@ void mainLoop(){
 	else{
 	  player.pBody.grounded = false;
 	}
-	
-    if(animationTime>1000.f/ANIMATION_RATE){
-      player.sprite.nextFrame();
-      (*currLevel).update();
-      animationTime-=1000.f/ANIMATION_RATE;
-	  gs.value++;
-    }
-
-    player.transform.move(xdir,0);
-
 	if((*currLevel).checkWarp(&(player.transform))>=0){
 	  int index = (*currLevel).checkWarp(&(player.transform));
 	  player.transform.setPosition((*currLevel).warps[index].x, (*currLevel).warps[index].y);
-	  currLevel = levels[(*currLevel).warps[index].dest_level];
+	  currLevel = &map[(*currLevel).warps[index].dest_level_x][(*currLevel).warps[index].dest_level_y];
 	}
-	
+
+	//Output framerate information
     std::clog<<framecount/(SDL_GetTicks()/1000.f)<<std::endl;
     framecount++;
 

@@ -28,15 +28,17 @@ void Tile::nextFrame(){
 }
 
 Warp::Warp(){
-  dest_level = -1;
+  dest_level_x = -1;
+  dest_level_y = -1;
   x = 0;
   y = 0;
   transform = Transform(0,0,0,0);
 }
 
-Warp::Warp(Transform* _t, int _dest_level, int _x, int _y){
+Warp::Warp(Transform* _t, int _dest_level_x, int _dest_level_y, int _x, int _y){
   transform = (*_t);
-  dest_level = _dest_level;
+  dest_level_x = _dest_level_x;
+  dest_level_y = _dest_level_y;
   x = _x;
   y = _y;
 }

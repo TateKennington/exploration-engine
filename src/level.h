@@ -22,10 +22,10 @@ class Tile{
 class Warp{
  public:
   Transform transform;
-  int dest_level, x, y;
+  int dest_level_x, dest_level_y, x, y;
 
   Warp();
-  Warp(Transform* _t, int _dest_level, int _x, int _y);
+  Warp(Transform* _t, int _dest_level_x, int _dest_level_y, int _x, int _y);
 
   bool collides(Transform* other);
 };

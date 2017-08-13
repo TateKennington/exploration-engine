@@ -1,10 +1,12 @@
 #include "entity.h"
+#include<iostream>
+Entity::Entity(){
+}
 
 Entity::Entity(Transform* _t, Sprite* _s, PhysicsBody* _pBody){
   transform = (*_t);
   sprite = (*_s);
   pBody = (*_pBody);
-  pBody.target = &transform;
 }
 
 void Entity::render(SDL_Renderer* renderer){
