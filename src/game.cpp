@@ -5,6 +5,8 @@
 #include "level.h"
 #include "gui.h"
 
+#include <lua.hpp>
+
 int SCREEN_WIDTH = 640;
 int SCREEN_HEIGHT = 480;
 int FRAME_RATE = 60;
@@ -16,6 +18,7 @@ SDL_Window* window = NULL;
 SDL_Renderer* windowRenderer = NULL;
 SDL_Joystick* controller = NULL;
 SDL_Event e;
+lua_State* L;
 
 Level map[10][10];
 Level* currLevel;
@@ -30,6 +33,7 @@ int main(int argc, char** argv){
   mainLoop();
 
   close();
+  lua_close(L);
   
   return 0;
   
@@ -69,12 +73,12 @@ void handleEvents(){
 		  player.pBody.grounded = false;
 		}
 		else if(e.key.keysym.sym == SDLK_a){
+		  player.transform.move(-3,0);
+		  //break;
 		}
 		else if(e.key.keysym.sym == SDLK_d){
-		}
-	  }
-	  else if(e.type == SDL_KEYUP){
-		if(e.key.keysym.sym == SDLK_a || e.key.keysym.sym == SDLK_d){
+		  player.transform.move(3,0);
+		  //break;
 		}
 	  }
     }
@@ -114,6 +118,11 @@ void mainLoop(){
   physics.add(&player.pBody);
 
   currLevel = &map[0][0];
+
+  L = luaL_newstate();
+  luaL_openlibs(L);
+
+  luaL_dofile(L,"test.lua");
   
   while(!quit){
 
