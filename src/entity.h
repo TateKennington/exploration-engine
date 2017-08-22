@@ -10,6 +10,7 @@ class Entity{
 
  public:
 
+  Entity();
   Entity(Transform* _t, Sprite* _s, PhysicsBody* _pBody);
   Transform transform;
   Sprite sprite;
