@@ -26,6 +26,9 @@ bool init(){
 
   SDL_SetRenderDrawColor(windowRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
+  lua_global = luaL_newstate();
+  luaL_openlibs(lua_global);
+  
   if(SDL_NumJoysticks()<1){
     std::clog<<"Could not find joystick"<<std::endl;
     return true;
@@ -49,6 +52,8 @@ void close(){
   if(controller != NULL){
     SDL_JoystickClose(controller);
   }
+
+  lua_close(lua_global);
   
   SDL_Quit();
 }

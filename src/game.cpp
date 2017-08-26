@@ -18,7 +18,7 @@ SDL_Window* window = NULL;
 SDL_Renderer* windowRenderer = NULL;
 SDL_Joystick* controller = NULL;
 SDL_Event e;
-lua_State* L;
+lua_State* lua_global = NULL;
 
 Level map[10][10];
 Level* currLevel;
@@ -33,11 +33,12 @@ int main(int argc, char** argv){
   mainLoop();
 
   close();
-  lua_close(L);
   
   return 0;
   
 }
+
+int xdir = 0;
 
 void handleEvents(){
 
@@ -52,10 +53,13 @@ void handleEvents(){
 		  ///X-axis
 		  if(e.jaxis.axis == 0){
 			if(e.jaxis.value < -8000){
+			  xdir = -1;
 			}
 			else if(e.jaxis.value>8000){
+			  xdir = 1;
 			}
 			else{
+			  xdir = 0;
 			}
 		  } 
 		}
@@ -73,15 +77,27 @@ void handleEvents(){
 		  player.pBody.grounded = false;
 		}
 		else if(e.key.keysym.sym == SDLK_a){
-		  player.transform.move(-3,0);
-		  //break;
+		  xdir = -1;
+		  //player.pBody.velx -=1;
 		}
 		else if(e.key.keysym.sym == SDLK_d){
-		  player.transform.move(3,0);
-		  //break;
+		  xdir = 1;
+		  //player.pBody.velx +=1;
+		}
+	  }
+	  else if(e.type == SDL_KEYUP){
+		if(e.key.keysym.sym == SDLK_d && xdir == 1){
+		  xdir = 0;
+		  //player.pBody.velx -=1;
+		}
+		else if(e.key.keysym.sym == SDLK_a && xdir == -1){
+		  xdir = 0;
+		  //player.pBody.velx +=1;
 		}
 	  }
     }
+
+  player.transform.move(xdir, 0);
   
 }
 
@@ -118,11 +134,6 @@ void mainLoop(){
   physics.add(&player.pBody);
 
   currLevel = &map[0][0];
-
-  L = luaL_newstate();
-  luaL_openlibs(L);
-
-  luaL_dofile(L,"test.lua");
   
   while(!quit){
 
