@@ -34,9 +34,10 @@ class Level{
  public:
   std::vector<Tile> tiles;
   std::vector<Warp> warps;
+  SDL_Texture* background;
   
   Level();
-  Level(std::vector<Tile>* _tiles);
+  Level(std::vector<Tile>* _tiles, SDL_Texture* _background);
 
   void render(SDL_Renderer* renderer);
   void update();
