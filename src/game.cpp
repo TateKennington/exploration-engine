@@ -106,8 +106,8 @@ void renderFrame(){
   SDL_RenderClear(windowRenderer);
   SDL_SetRenderDrawColor(windowRenderer,0,0,0,255);
   
-  player.render(windowRenderer);
   (*currLevel).render(windowRenderer);
+  player.render(windowRenderer);
   
   SDL_RenderPresent(windowRenderer);
   
@@ -130,9 +130,16 @@ void mainLoop(){
   player = Entity(new Transform(90,90,20,20), new Sprite("spriteTest.bmp",10,10),new PhysicsBody());
   player.transform.constrain(screenRect);
   player.pBody.target = &player.transform;
+
+  SDL_SetTextureAlphaMod(player.sprite.sheet, 0xFF);
   
   physics.add(&player.pBody);
 
+  std::vector<Tile> temp;
+  temp.push_back(Tile(new Transform(90,200,20,20), new Sprite("spriteTest.bmp",10,10)));
+  
+  map[0][0] = Level(&temp, loadTexture("test.bmp"));
+  
   currLevel = &map[0][0];
   
   while(!quit){
