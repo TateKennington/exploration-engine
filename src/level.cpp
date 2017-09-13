@@ -22,13 +22,24 @@ void Tile::render(SDL_Renderer* renderer){
   temp.w = transform.width;
   temp.h = transform.height;
 
-  SDL_Rect shadow = castShadow(temp, 1, 0, 300, 3, 0);
-  SDL_SetTextureAlphaMod(sprite.sheet, 0x69);
-  SDL_SetTextureColorMod(sprite.sheet, 0x00, 0x00, 0x00);
-  sprite.render(renderer, &shadow);
-  SDL_SetTextureAlphaMod(sprite.sheet, 0xFF);
-  SDL_SetTextureColorMod(sprite.sheet, 0xFF, 0xFF, 0xFF);
   sprite.render(renderer, &temp);
+}
+
+void Tile::renderShadow(SDL_Renderer* renderer, Light l){
+  SDL_Rect temp;
+  temp.x = transform.x;
+  temp.y = transform.y;
+  temp.w = transform.width;
+  temp.h = transform.height;
+  
+
+  SDL_Rect shadow = l.castShadow(temp, 1, 0);
+
+  SDL_SetTextureColorMod(sprite.sheet, 0x00, 0x00, 0x00);
+  SDL_SetTextureAlphaMod(sprite.sheet, 0x42);
+  sprite.render(renderer, &shadow);
+  SDL_SetTextureColorMod(sprite.sheet, 0xFF, 0xFF, 0xFF);
+  SDL_SetTextureAlphaMod(sprite.sheet, 0xFF);
 }
 
 void Tile::nextFrame(){
@@ -66,9 +77,16 @@ Level::Level(std::vector<Tile>* _tiles, SDL_Texture* _background){
 
 void Level::render(SDL_Renderer* renderer){
   SDL_RenderCopy(renderer, background, NULL, NULL);
+  for(int i = 0; i<lights.size(); i++){
+    for(int j = 0; j<tiles.size(); j++){
+      tiles[j].renderShadow(renderer, lights[i]);
+    }
+  }
+  
   for(int i = 0; i<tiles.size();i++){
     tiles[i].render(renderer);
   }
+  
 }
 
 bool Level::collides(Transform* other){
