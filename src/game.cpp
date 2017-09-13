@@ -107,6 +107,9 @@ void renderFrame(){
   SDL_SetRenderDrawColor(windowRenderer,0,0,0,255);
   
   (*currLevel).render(windowRenderer);
+  for(int i = 0; i<currLevel->lights.size(); i++){
+    player.renderShadow(windowRenderer, currLevel->lights[i]);
+  }
   player.render(windowRenderer);
   
   SDL_RenderPresent(windowRenderer);
@@ -139,7 +142,8 @@ void mainLoop(){
   temp.push_back(Tile(new Transform(90,200,20,20), new Sprite("spriteTest.bmp",10,10)));
   
   map[0][0] = Level(&temp, loadTexture("test.bmp"));
-  
+  map[0][0].lights.push_back(Light(0,0,3));
+  map[0][0].lights.push_back(Light(200,0,4));
   currLevel = &map[0][0];
   
   while(!quit){

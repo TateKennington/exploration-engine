@@ -4,6 +4,7 @@
 #include<vector>
 #include "graphics.h"
 #include "transform.h"
+#include "light.h"
 #include "SDL2/SDL.h"
 
 class Tile{
@@ -16,6 +17,7 @@ class Tile{
 
   bool collides(Transform* other);
   void render(SDL_Renderer* renderer);
+  void renderShadow(SDL_Renderer* renderer, Light l);
   void nextFrame();
 };
 
@@ -34,6 +36,7 @@ class Level{
  public:
   std::vector<Tile> tiles;
   std::vector<Warp> warps;
+  std::vector<Light> lights;
   SDL_Texture* background;
   
   Level();

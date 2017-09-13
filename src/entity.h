@@ -5,6 +5,7 @@
 #include "transform.h"
 #include "graphics.h"
 #include "physics.h"
+#include "light.h"
 
 class Entity{
 
@@ -17,7 +18,7 @@ class Entity{
   PhysicsBody pBody;
   
   void render(SDL_Renderer* renderer);
-  
+  void renderShadow(SDL_Renderer* renderer, Light l);
 };
 
 #endif
