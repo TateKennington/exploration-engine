@@ -83,20 +83,3 @@ SDL_Texture* loadTexture(std::string fname){
 
   return result;
 }
-
-SDL_Rect castShadow(SDL_Rect src, int srcz, int lightx, int lighty, int lightz, int destz){
-  SDL_Rect res;
-
-  int xdif = src.x - lightx;
-  int ydif = src.y - lighty;
-  int zdif = lightz - srcz;
-
-  res.x = lightx + sqrt(((xdif*xdif + zdif*zdif)/(zdif*zdif)-1)*(lightz - destz)*(lightz - destz)) * (xdif>0?1:-1);
-  xdif+=src.w;
-  res.w = abs(res.x - (lightx + sqrt(((xdif*xdif + zdif*zdif)/(zdif*zdif)-1)*(lightz - destz)*(lightz - destz)) * (xdif>0?1:-1)));
-  res.y = lighty + sqrt(((ydif*ydif + zdif*zdif)/(zdif*zdif)-1)*(lightz - destz)*(lightz - destz)) * (ydif>0?1:-1);
-  ydif+=src.h;
-  res.h = abs(res.y - (lighty + sqrt(((ydif*ydif + zdif*zdif)/(zdif*zdif)-1)*(lightz - destz)*(lightz - destz)) * (ydif>0?1:-1)));
-  
-  return res;
-}
