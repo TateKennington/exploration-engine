@@ -1,6 +1,6 @@
 #include "game.h"
 #include "utils.h"
-#include<cmath>
+#include <cmath>
 
 bool init(){
   
@@ -70,7 +70,7 @@ SDL_Texture* loadTexture(std::string fname){
     return NULL;
   }
 
-  SDL_SetColorKey(loaded, SDL_TRUE, SDL_MapRGB(loaded->format, 0x69, 0x00, 0x69));
+  SDL_SetColorKey(loaded, SDL_TRUE, SDL_MapRGB(loaded->format, 0x00, 0xFF, 0xFF));
   
   result = SDL_CreateTextureFromSurface(windowRenderer, loaded);
   SDL_FreeSurface(loaded);
