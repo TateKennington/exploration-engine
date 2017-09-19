@@ -1,5 +1,7 @@
 #include "level.h"
 #include "utils.h"
+#include "lightlevel.h"
+#include "game.h"
 
 Tile::Tile(){
   transform = Transform();
@@ -68,15 +70,45 @@ bool Warp::collides(Transform* other){
 
 Level::Level(){
   tiles = std::vector<Tile>();
+  lightLevel = std::vector<std::vector<LightLevel> >(10);
+  for(int i = 0; i<lightLevel.size(); i++){
+	lightLevel[i] = std::vector<LightLevel>(10);
+  }
 }
 
 Level::Level(std::vector<Tile>* _tiles, SDL_Texture* _background){
   background = _background;
   tiles = (*_tiles);
+  lightLevel = std::vector<std::vector<LightLevel> >(50);
+  for(int i = 0; i<lightLevel.size(); i++){
+	lightLevel[i] = std::vector<LightLevel>(50);
+  }
+  SDL_Texture* temp = loadTexture("light.bmp");
+  for(int i = 0; i<lightLevel.size(); i++){
+	for(int j = 0; j<lightLevel[i].size(); j++){
+	  lightLevel[i][j].texture = temp;
+	}
+  }
 }
 
 void Level::render(SDL_Renderer* renderer){
   SDL_RenderCopy(renderer, background, NULL, NULL);
+  for(int i = 0; i<lights.size(); i++){
+	lights[i].illuminate(&lightLevel);
+  }
+  
+  SDL_Rect temp;
+  temp.w = SCREEN_WIDTH/lightLevel.size()+1;
+  temp.h = SCREEN_HEIGHT/lightLevel[0].size()+1;
+  
+  for(int i = 0; i<lightLevel.size(); i++){
+	temp.x = i*temp.w;
+	for(int j = 0; j<lightLevel[i].size(); j++){
+	  temp.y = j*temp.h;
+	  lightLevel[i][j].render(renderer, &temp);
+	  lightLevel[i][j].intensity = 0;
+	}
+  }
   for(int i = 0; i<lights.size(); i++){
     for(int j = 0; j<tiles.size(); j++){
       tiles[j].renderShadow(renderer, lights[i]);

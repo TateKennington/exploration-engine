@@ -142,8 +142,8 @@ void mainLoop(){
   temp.push_back(Tile(new Transform(90,200,20,20), new Sprite("spriteTest.bmp",10,10)));
   
   map[0][0] = Level(&temp, loadTexture("test.bmp"));
-  map[0][0].lights.push_back(Light(0,0,3));
-  map[0][0].lights.push_back(Light(200,0,4));
+  //map[0][0].lights.push_back(Light(0,0,3, 100));
+  map[0][0].lights.push_back(Light(200,0,4, 300));
   currLevel = &map[0][0];
   
   while(!quit){
