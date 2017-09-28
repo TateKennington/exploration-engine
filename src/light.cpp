@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <cmath>
 #include "light.h"
 #include "utils.h"
 #include "game.h"
@@ -35,7 +36,7 @@ void Light::illuminate(std::vector<std::vector<LightLevel> > *l){
   for(int i = 0; i<l->size(); i++){
 	for(int j = 0; j<(*l)[i].size(); j++){
 	  int ax = i*w; int ay = j*h;
-	  int intensity = 10000*0xAA/(1+(ax-x+10)*(ax-x+10)+(ay-y+10)*(ay-y+10));
+	  int intensity = 0xFF - sqrt(1+(ax-x+10)*(ax-x+10)+(ay-y+10)*(ay-y+10))/2;
 	  (*l)[i][j].intensity += intensity;
 	}
   }
