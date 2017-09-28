@@ -70,18 +70,18 @@ bool Warp::collides(Transform* other){
 
 Level::Level(){
   tiles = std::vector<Tile>();
-  lightLevel = std::vector<std::vector<LightLevel> >(10);
+  lightLevel = std::vector<std::vector<LightLevel> >(100);
   for(int i = 0; i<lightLevel.size(); i++){
-	lightLevel[i] = std::vector<LightLevel>(10);
+	lightLevel[i] = std::vector<LightLevel>(100);
   }
 }
 
 Level::Level(std::vector<Tile>* _tiles, SDL_Texture* _background){
   background = _background;
   tiles = (*_tiles);
-  lightLevel = std::vector<std::vector<LightLevel> >(50);
+  lightLevel = std::vector<std::vector<LightLevel> >(SCREEN_WIDTH/5);
   for(int i = 0; i<lightLevel.size(); i++){
-	lightLevel[i] = std::vector<LightLevel>(50);
+	lightLevel[i] = std::vector<LightLevel>(SCREEN_HEIGHT/5);
   }
   SDL_Texture* temp = loadTexture("light.bmp");
   for(int i = 0; i<lightLevel.size(); i++){
@@ -89,6 +89,17 @@ Level::Level(std::vector<Tile>* _tiles, SDL_Texture* _background){
 	  lightLevel[i][j].texture = temp;
 	}
   }
+}
+
+void Level::bakeLight(Light l){
+
+  l.illuminate(&lightLevel);
+  for(int i = 0; i<lightLevel.size(); i++){
+    for(int j = 0; j<lightLevel[i].size(); j++){
+      lightLevel[i][j].bake();
+    }
+  }
+  
 }
 
 void Level::render(SDL_Renderer* renderer){
@@ -100,14 +111,13 @@ void Level::render(SDL_Renderer* renderer){
   SDL_Rect temp;
   temp.w = SCREEN_WIDTH/lightLevel.size()+1;
   temp.h = SCREEN_HEIGHT/lightLevel[0].size()+1;
-  
   for(int i = 0; i<lightLevel.size(); i++){
-	temp.x = i*temp.w;
-	for(int j = 0; j<lightLevel[i].size(); j++){
-	  temp.y = j*temp.h;
-	  lightLevel[i][j].render(renderer, &temp);
-	  lightLevel[i][j].intensity = 0;
-	}
+    temp.x = i*temp.w;
+    for(int j = 0; j<lightLevel[i].size(); j++){
+      temp.y = j*temp.h;
+      lightLevel[i][j].render(renderer, &temp);
+      lightLevel[i][j].reset();
+    }
   }
   for(int i = 0; i<lights.size(); i++){
     for(int j = 0; j<tiles.size(); j++){

@@ -6,11 +6,14 @@
 class LightLevel{
  public:
   int intensity;
+  int base;
   SDL_Texture* texture;
   
   LightLevel();
 
   void render(SDL_Renderer* renderer, SDL_Rect* temp);
+  void bake();
+  void reset();
 };
 
 #endif

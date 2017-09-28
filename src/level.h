@@ -47,6 +47,7 @@ class Level{
   void update();
   bool collides(Transform* other);
   int checkWarp(Transform* other);
+  void bakeLight(Light l);
 };
 
 #endif

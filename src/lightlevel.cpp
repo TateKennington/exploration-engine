@@ -4,17 +4,31 @@
 
 LightLevel::LightLevel(){
   intensity = 0;
+  base = 0;
   texture = NULL;
 }
 
 void LightLevel::render(SDL_Renderer* renderer, SDL_Rect* temp){
-  if(intensity>0x20){
-	SDL_SetTextureAlphaMod(texture, intensity>0xAA?0xAA:intensity);
-	SDL_SetTextureColorMod(texture, 0xFF, 0xFF, 0xFF);
+  int threshold = 0x40;
+  
+  intensity = intensity>0xFF?0xFF:intensity;
+  intensity = intensity<0?0:intensity;
+  
+  if(intensity>=threshold){
+    SDL_SetTextureAlphaMod(texture, intensity);
+    SDL_SetTextureColorMod(texture, intensity, intensity, intensity);
   }
   else{
-	SDL_SetTextureAlphaMod(texture, 0x69);
-	SDL_SetTextureColorMod(texture, 0,0,0);
+    SDL_SetTextureAlphaMod(texture, /*0x80 - 3*intensity*/intensity>threshold-20?intensity:((double)(threshold-intensity)/(threshold)*0xFF));
+    SDL_SetTextureColorMod(texture, intensity, intensity, intensity);
   }
   SDL_RenderCopy(renderer, texture, NULL, temp);
+}
+
+void LightLevel::bake(){
+  base = intensity;
+}
+
+void LightLevel::reset(){
+  intensity = base;
 }
