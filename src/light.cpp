@@ -37,7 +37,7 @@ void Light::illuminate(std::vector<std::vector<LightLevel> > *l){
 	for(int j = 0; j<(*l)[i].size(); j++){
 	  int ax = i*w; int ay = j*h;
 	  int intensity = 0xFF - sqrt(1+(ax-x+10)*(ax-x+10)+(ay-y+10)*(ay-y+10))/2;
-	  (*l)[i][j].intensity += intensity;
+	  if(intensity>=0)(*l)[i][j].intensity += intensity;
 	}
   }
  
