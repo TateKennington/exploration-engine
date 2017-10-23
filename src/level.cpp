@@ -99,7 +99,7 @@ void Level::bakeLight(Light l){
       lightLevel[i][j].bake();
     }
   }
-  
+  bakedLights.push_back(l);
 }
 
 void Level::render(SDL_Renderer* renderer){
@@ -119,9 +119,13 @@ void Level::render(SDL_Renderer* renderer){
       lightLevel[i][j].reset();
     }
   }
-  for(int i = 0; i<lights.size(); i++){
-    for(int j = 0; j<tiles.size(); j++){
+
+  for(int j = 0; j<tiles.size(); j++){
+    for(int i = 0; i<lights.size(); i++){
       tiles[j].renderShadow(renderer, lights[i]);
+    }
+    for(int i = 0; i<bakedLights.size(); i++){
+      tiles[j].renderShadow(renderer, bakedLights[i]);
     }
   }
   

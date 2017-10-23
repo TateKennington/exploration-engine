@@ -37,6 +37,7 @@ class Level{
   std::vector<Tile> tiles;
   std::vector<Warp> warps;
   std::vector<Light> lights;
+  std::vector<Light> bakedLights;
   std::vector<std::vector<LightLevel> > lightLevel;
   SDL_Texture* background;
   

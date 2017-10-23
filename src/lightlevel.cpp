@@ -19,7 +19,7 @@ void LightLevel::render(SDL_Renderer* renderer, SDL_Rect* temp){
     SDL_SetTextureColorMod(texture, intensity, intensity, intensity);
   }
   else{
-    SDL_SetTextureAlphaMod(texture, /*0x80 - 3*intensity*/intensity>threshold-20?intensity:((double)(threshold-intensity)/(threshold)*0xFF));
+    SDL_SetTextureAlphaMod(texture,intensity>threshold-20?intensity:((double)(threshold-intensity)/(threshold)*0xFF));
     SDL_SetTextureColorMod(texture, intensity, intensity, intensity);
   }
   SDL_RenderCopy(renderer, texture, NULL, temp);

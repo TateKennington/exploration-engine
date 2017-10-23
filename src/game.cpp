@@ -142,49 +142,54 @@ void mainLoop(){
   temp.push_back(Tile(new Transform(90,200,20,20), new Sprite("spriteTest.bmp",10,10)));
   
   map[0][0] = Level(&temp, loadTexture("test.bmp"));
-  //map[0][0].lights.push_back(Light(0,0,3, 100));
-  map[0][0].lights.push_back(Light(200,0,4, 300));
+  map[0][0].lights.push_back(Light(0,0,3, 100));
+  //map[0][0].lights.push_back(Light(200,0,4, 300));
+  map[0][0].bakeLight(Light(0,0,3,100));
+  //map[0][0].bakeLight(Light(600,100,4,100));
+  //map[0][0].bakeLight(Light(100,400,4,0));
   currLevel = &map[0][0];
   
   while(!quit){
+    
+    handleEvents();
 
-	handleEvents();
-
-	//Render new frame
+    map[0][0].lights[0].x++;
+    
+    //Render new frame
     startTime = SDL_GetTicks();
-	renderFrame();
-	if(SDL_GetTicks()-startTime < 1000.f/FRAME_RATE){   //Cap Framerate
-	  SDL_Delay(1000.f/FRAME_RATE-(SDL_GetTicks()-startTime));
-	}
-
-	//Frame independant updates
-	////Update animation state
+    renderFrame();
+    if(SDL_GetTicks()-startTime < 1000.f/FRAME_RATE){   //Cap Framerate
+      SDL_Delay(1000.f/FRAME_RATE-(SDL_GetTicks()-startTime));
+    }
+    
+    //Frame independant updates
+    ////Update animation state
     animationTime+=SDL_GetTicks()-startTime;
-	if(animationTime>1000.f/ANIMATION_RATE){
+    if(animationTime>1000.f/ANIMATION_RATE){
       player.sprite.nextFrame();
       (*currLevel).update();
       animationTime-=1000.f/ANIMATION_RATE;
     }
-
-	////Physics Update
-	physics.update((SDL_GetTicks()-startTime)/1000.f);
-	player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
-	
-	////Level Update
+    
+    ////Physics Update
+    physics.update((SDL_GetTicks()-startTime)/1000.f);
+    player.pBody.update((SDL_GetTicks()-startTime)/1000.f);
+    
+    ////Level Update
     if((*currLevel).collides(&(player.transform))){
       player.pBody.vely = 0;
       player.pBody.grounded = true;
     }
-	else{
-	  player.pBody.grounded = false;
-	}
-	if((*currLevel).checkWarp(&(player.transform))>=0){
-	  int index = (*currLevel).checkWarp(&(player.transform));
-	  player.transform.setPosition((*currLevel).warps[index].x, (*currLevel).warps[index].y);
-	  currLevel = &map[(*currLevel).warps[index].dest_level_x][(*currLevel).warps[index].dest_level_y];
-	}
-
-	//Output framerate information
+    else{
+      player.pBody.grounded = false;
+    }
+    if((*currLevel).checkWarp(&(player.transform))>=0){
+      int index = (*currLevel).checkWarp(&(player.transform));
+      player.transform.setPosition((*currLevel).warps[index].x, (*currLevel).warps[index].y);
+      currLevel = &map[(*currLevel).warps[index].dest_level_x][(*currLevel).warps[index].dest_level_y];
+    }
+    
+    //Output framerate information
     std::clog<<framecount/(SDL_GetTicks()/1000.f)<<std::endl;
     framecount++;
 
